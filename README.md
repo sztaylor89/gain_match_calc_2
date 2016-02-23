@@ -1,1 +1,1 @@
-# gain_match_calc_2
+C++ version of gain match calc.  Used to calculate where to locate Compton edges to gain match VANDLE bars.  Compile with GCC or similar.
