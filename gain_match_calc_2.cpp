@@ -12,52 +12,57 @@ using namespace std;
 //Class for calculating peak location
 class Location
 {
-private:
-  double x;//MeV
-  double neutron_keVee;//keVee
- public:
-    double CSchannel, COchannel;
-
-  //calculates neutron keVee using Madey's/Cecil's formula
-  x = (0.95*maxNeutronEnergy)-(8.0*(1-exp(-0.1*pow(maxNeutronEnergy,0.9))));
-  neutron_keVee = x*1000;
-
-  //calculates where to put edges
-  CSchannel = CSedge * (maxChannel/neutron_keVee);
-  COchannel = COedge * (maxChannel/neutron_keVee);
+public:
+    Location();//constructor
+    ~Location();//destructor
+    double x;//MeV, placeholder for neutron electron equivalent info
+    double neutron_keVee;//keVee
+    double channel;//Channels
+    double edge;//keVee
+    double Compton(double gamma_energy);
+    double Madey(double maxNeutronEnergy, double maxChannel, double edge);
 };
+//Constructor and Destructor
+Location::Location(){}
+Location::~Location(){}
 
 //function to calculate Compton Edge
-  double Compton (double a)
-  {
-    double edge;//keV
+double Location::Compton (double gamma_energy)
+{
     double eMass = 511;//keV
-    edge = a-(a/(1+(2*a/eMass)));
+    edge = gamma_energy-(gamma_energy/(1+(2*gamma_energy/eMass)));
     return edge;
-  }
+}
 
+//calculates neutron keVee using Madey's/Cecil's formula and computes final channel
+double Location::Madey(double maxNeutronEnergy, double maxChannel, double edge)
+{
+  x = (0.95*maxNeutronEnergy)-(8.0*(1-exp(-0.1*pow(maxNeutronEnergy,0.9))));
+  neutron_keVee = x*1000;
+  channel = edge * (maxChannel/neutron_keVee);
+  return channel;
+}
 
 //calls the class to complete calculations
 int main()
 {
-  //calculates compton edges
-  double CSenergy = 662, COenergy = 1333;//keV
-  double CSedge, COedge;//keVee
-  CSedge = Compton(CSenergy);
-  COedge = Compton(COenergy);
+    double CSenergy = 662, COenergy = 1333;//keV
+    double CSedge, COedge, CSchannel, COchannel;//keVee
+    //gathers user input on neutron energy and max channel
+    double maxChannel=8192.0, maxNeutronEnergy;//channels,MeV
+    cout << "Enter maximum neutron energy(MeV): " << endl;
+    cin >> maxNeutronEnergy;
+    cout << "Enter maximum histogram channel(default=8192): " << endl;
+    cin >> maxChannel;
 
-  //gathers user input on neutron energy and max channel
-  double maxChannel, maxNeutronEnergy;//channels,MeV
-  cout << "Enter maximum neutron energy(MeV): " << endl;
-  cin >> maxNeutronEnergy;
-  cout << "Enter maximum histogram channel(default=8192): " << endl;
-  cin >> maxChannel;
-  
-  Location CS;
-  Location CO;
+    Location CS, CO;
+    CSedge=CS.Compton(CSenergy);
+    COedge=CO.Compton(COenergy);
+    CSchannel=CS.Madey(maxNeutronEnergy,maxChannel,CSedge);
+    COchannel=CO.Madey(maxNeutronEnergy,maxChannel,COedge);
 
-  //Outputs where to place compton edge
-  cout << "Place Compton edge in QDC spectrum here: " << endl;
-  cout << "137Cs in channel " << Location.CS << ", 60Co in channel " << Location.CO << endl;
-  return 0;
+    //Outputs where to place compton edge
+    cout << "Place Compton edge in QDC spectrum here: " << endl;
+    cout << "137Cs in channel " << CSchannel << ", 60Co in channel " << COchannel << endl;
+    return 0;
 }
