@@ -52,7 +52,7 @@ int main()
     double maxChannel=8192.0, maxNeutronEnergy;//channels,MeV
     cout << "Enter maximum neutron energy(MeV): " << endl;
     cin >> maxNeutronEnergy;
-    cout << "Enter maximum histogram channel(default=8192): " << endl;
+    cout << "Enter maximum histogram channel(default: enter 8192): " << endl;
     cin >> maxChannel;
 
     Location CS, CO;
@@ -64,5 +64,6 @@ int main()
     //Outputs where to place compton edge
     cout << "Place Compton edge in QDC spectrum here: " << endl;
     cout << "137Cs in channel " << CSchannel << ", 60Co in channel " << COchannel << endl;
+    cout << "keVee/Ch = " << CSedge/CSchannel << endl;
     return 0;
 }
